@@ -15,19 +15,15 @@ import 'angular2/http';
 // RxJS
 import 'rxjs';
 
-/**
- * Bootstrap imports
- */
 require('bootstrap/dist/css/bootstrap.min.css');
 require('imports?jQuery=jquery!bootstrap/dist/js/bootstrap.min');
+
 require('imports?jQuery=jquery!jquery-slimscroll/jquery.slimscroll');
 
-/**
- * Global CSS imports
- */
 require('animate.css/animate.min.css');
 require('font-awesome/css/font-awesome.min.css');
 
 require('metismenu/dist/metisMenu');
 require('metismenu/dist/metisMenu.css');
 
+require('chart.js/Chart');

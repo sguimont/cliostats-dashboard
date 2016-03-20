@@ -1,221 +1,223 @@
-import {Component} from "angular2/core";
+import {Component, OnInit} from "angular2/core";
 import {RouteConfig, ROUTER_DIRECTIVES, Router} from "angular2/router";
 import {FORM_PROVIDERS} from "angular2/common";
 import {Api} from "./services/api/api";
 import {Home} from "./components/home/home";
 import {About} from "./components/about/about";
+import {Charts} from "./components/charts/charts";
 import "../style/app.scss";
 
 var JQuery = require('jquery');
 
 @Component({
-    selector: 'app',
-    providers: [...FORM_PROVIDERS, Api],
-    directives: [...ROUTER_DIRECTIVES],
-    pipes: [],
-    styles: [require('./app.scss')],
-    template: require('./app.html')
+  selector: 'app',
+  providers: [...FORM_PROVIDERS, Api],
+  directives: [...ROUTER_DIRECTIVES],
+  pipes: [],
+  styles: [require('./app.scss')],
+  template: require('./app.html')
 })
 @RouteConfig([
-    {path: '/', component: Home, name: 'Home'},
-    {path: '/About', component: About, name: 'About'}
+  {path: '/', component: Home, name: 'Home'},
+  {path: '/About', component: About, name: 'About'},
+  {path: '/Charts', component: Charts, name: 'Charts'}
 ])
-export class App {
+export class App implements OnInit {
 
-    url:string = 'https://github.com/sguimont/node-cliostats';
+  url:string = 'https://github.com/sguimont/node-cliostats';
 
-    constructor(private router:Router, public api:Api) {
+  constructor(private router:Router, public api:Api) {
+  }
+
+  static fixWrapperHeight() {
+    var headerH = 62;
+    var navigationH = JQuery("#navigation").height();
+    var contentH = JQuery(".content").height();
+
+    // Set new height when contnet height is less then navigation
+    if (contentH < navigationH) {
+      JQuery("#wrapper").css("min-height", navigationH + 'px');
     }
 
-    static fixWrapperHeight() {
-        var headerH = 62;
-        var navigationH = JQuery("#navigation").height();
-        var contentH = JQuery(".content").height();
-
-        // Set new height when contnet height is less then navigation
-        if (contentH < navigationH) {
-            JQuery("#wrapper").css("min-height", navigationH + 'px');
-        }
-
-        // Set new height when contnet height is less then navigation and navigation is less then window
-        if (contentH < navigationH && navigationH < JQuery(window).height()) {
-            JQuery("#wrapper").css("min-height", JQuery(window).height() - headerH + 'px');
-        }
-
-        // Set new height when contnet is higher then navigation but less then window
-        if (contentH > navigationH && contentH < JQuery(window).height()) {
-            JQuery("#wrapper").css("min-height", JQuery(window).height() - headerH + 'px');
-        }
+    // Set new height when contnet height is less then navigation and navigation is less then window
+    if (contentH < navigationH && navigationH < JQuery(window).height()) {
+      JQuery("#wrapper").css("min-height", JQuery(window).height() - headerH + 'px');
     }
 
-    static setBodySmall() {
-        if (JQuery(window).width() < 769) {
-            JQuery('body').addClass('page-small');
-        } else {
-            JQuery('body').removeClass('page-small');
-            JQuery('body').removeClass('show-sidebar');
-        }
+    // Set new height when contnet is higher then navigation but less then window
+    if (contentH > navigationH && contentH < JQuery(window).height()) {
+      JQuery("#wrapper").css("min-height", JQuery(window).height() - headerH + 'px');
     }
+  }
 
-    public isRouteActive(route) {
-        return this.router.isRouteActive(this.router.generate(route));
+  static setBodySmall() {
+    if (JQuery(window).width() < 769) {
+      JQuery('body').addClass('page-small');
+    } else {
+      JQuery('body').removeClass('page-small');
+      JQuery('body').removeClass('show-sidebar');
     }
+  }
 
-    ngOnInit() {
-        JQuery.fn['animatePanel'] = function () {
+  public isRouteActive(route) {
+    return this.router.isRouteActive(this.router.generate(route));
+  }
 
-            var element = JQuery(this);
-            var effect = JQuery(this).data('effect');
-            var delay = JQuery(this).data('delay');
-            var child = JQuery(this).data('child');
+  ngOnInit() {
+    JQuery.fn['animatePanel'] = function () {
 
-            // Set default values for attrs
-            if (!effect) {
-                effect = 'zoomIn';
-            }
-            if (!delay) {
-                delay = 0.06;
-            } else {
-                delay = delay / 10;
-            }
-            if (!child) {
-                child = '.row > div';
-            } else {
-                child = "." + child;
-            }
+      var element = JQuery(this);
+      var effect = JQuery(this).data('effect');
+      var delay = JQuery(this).data('delay');
+      var child = JQuery(this).data('child');
 
-            //Set defaul values for start animation and delay
-            var startAnimation = 0;
-            var start = Math.abs(delay) + startAnimation;
+      // Set default values for attrs
+      if (!effect) {
+        effect = 'zoomIn';
+      }
+      if (!delay) {
+        delay = 0.06;
+      } else {
+        delay = delay / 10;
+      }
+      if (!child) {
+        child = '.row > div';
+      } else {
+        child = "." + child;
+      }
 
-            // Get all visible element and set opacity to 0
-            var panel = element.find(child);
-            panel.addClass('opacity-0');
+      //Set defaul values for start animation and delay
+      var startAnimation = 0;
+      var start = Math.abs(delay) + startAnimation;
 
-            // Get all elements and add effect class
-            panel = element.find(child);
-            panel.addClass('stagger').addClass('animated-panel').addClass(effect);
+      // Get all visible element and set opacity to 0
+      var panel = element.find(child);
+      panel.addClass('opacity-0');
 
-            var panelsCount = panel.length + 10;
-            var animateTime = (panelsCount * delay * 10000) / 10;
+      // Get all elements and add effect class
+      panel = element.find(child);
+      panel.addClass('stagger').addClass('animated-panel').addClass(effect);
 
-            // Add delay for each child elements
-            panel.each(function (i, elm) {
-                start += delay;
-                var rounded = Math.round(start * 10) / 10;
-                JQuery(elm).css('animation-delay', rounded + 's');
-                // Remove opacity 0 after finish
-                JQuery(elm).removeClass('opacity-0');
-            });
+      var panelsCount = panel.length + 10;
+      var animateTime = (panelsCount * delay * 10000) / 10;
 
-            // Clear animation after finish
-            setTimeout(function () {
-                JQuery('.stagger').css('animation', '');
-                JQuery('.stagger').removeClass(effect).removeClass('animated-panel').removeClass('stagger');
-            }, animateTime);
+      // Add delay for each child elements
+      panel.each(function (i, elm) {
+        start += delay;
+        var rounded = Math.round(start * 10) / 10;
+        JQuery(elm).css('animation-delay', rounded + 's');
+        // Remove opacity 0 after finish
+        JQuery(elm).removeClass('opacity-0');
+      });
 
-        };
+      // Clear animation after finish
+      setTimeout(function () {
+        JQuery('.stagger').css('animation', '');
+        JQuery('.stagger').removeClass(effect).removeClass('animated-panel').removeClass('stagger');
+      }, animateTime);
 
-        App.setBodySmall();
+    };
 
-        JQuery('.hide-menu').on('click', function (event) {
-            event.preventDefault();
-            if (JQuery(window).width() < 769) {
-                JQuery("body").toggleClass("show-sidebar");
-            } else {
-                JQuery("body").toggleClass("hide-sidebar");
-            }
-        });
+    App.setBodySmall();
 
-        // Initialize metsiMenu plugin to sidebar menu
-        JQuery('#side-menu').metisMenu();
+    JQuery('.hide-menu').on('click', function (event) {
+      event.preventDefault();
+      if (JQuery(window).width() < 769) {
+        JQuery("body").toggleClass("show-sidebar");
+      } else {
+        JQuery("body").toggleClass("hide-sidebar");
+      }
+    });
 
-        // Initialize animate panel function
-        JQuery('.animate-panel').animatePanel();
+    // Initialize metsiMenu plugin to sidebar menu
+    JQuery('#side-menu').metisMenu();
 
-        // Function for collapse hpanel
-        JQuery('.showhide').on('click', function (event) {
-            event.preventDefault();
-            var hpanel = JQuery(this).closest('div.hpanel');
-            var icon = JQuery(this).find('i:first');
-            var body = hpanel.find('div.panel-body');
-            var footer = hpanel.find('div.panel-footer');
-            body.slideToggle(300);
-            footer.slideToggle(200);
+    // Initialize animate panel function
+    JQuery('.animate-panel').animatePanel();
 
-            // Toggle icon from up to down
-            icon.toggleClass('fa-chevron-up').toggleClass('fa-chevron-down');
-            hpanel.toggleClass('').toggleClass('panel-collapse');
-            setTimeout(function () {
-                hpanel.resize();
-                hpanel.find('[id^=map-]').resize();
-            }, 50);
-        });
+    // Function for collapse hpanel
+    JQuery('.showhide').on('click', function (event) {
+      event.preventDefault();
+      var hpanel = JQuery(this).closest('div.hpanel');
+      var icon = JQuery(this).find('i:first');
+      var body = hpanel.find('div.panel-body');
+      var footer = hpanel.find('div.panel-footer');
+      body.slideToggle(300);
+      footer.slideToggle(200);
 
-        // Function for close hpanel
-        JQuery('.closebox').on('click', function (event) {
-            event.preventDefault();
-            var hpanel = JQuery(this).closest('div.hpanel');
-            hpanel.remove();
-            if (JQuery('body').hasClass('fullscreen-panel-mode')) {
-                JQuery('body').removeClass('fullscreen-panel-mode');
-            }
-        });
+      // Toggle icon from up to down
+      icon.toggleClass('fa-chevron-up').toggleClass('fa-chevron-down');
+      hpanel.toggleClass('').toggleClass('panel-collapse');
+      setTimeout(function () {
+        hpanel.resize();
+        hpanel.find('[id^=map-]').resize();
+      }, 50);
+    });
 
-        // Fullscreen for fullscreen hpanel
-        JQuery('.fullscreen').on('click', function () {
-            var hpanel = JQuery(this).closest('div.hpanel');
-            var icon = JQuery(this).find('i:first');
-            JQuery('body').toggleClass('fullscreen-panel-mode');
-            icon.toggleClass('fa-expand').toggleClass('fa-compress');
-            hpanel.toggleClass('fullscreen');
-            setTimeout(function () {
-                JQuery(window).trigger('resize');
-            }, 100);
-        });
+    // Function for close hpanel
+    JQuery('.closebox').on('click', function (event) {
+      event.preventDefault();
+      var hpanel = JQuery(this).closest('div.hpanel');
+      hpanel.remove();
+      if (JQuery('body').hasClass('fullscreen-panel-mode')) {
+        JQuery('body').removeClass('fullscreen-panel-mode');
+      }
+    });
 
-        // Open close right sidebar
-        JQuery('.right-sidebar-toggle').on('click', function () {
-            JQuery('#right-sidebar').toggleClass('sidebar-open');
-        });
+    // Fullscreen for fullscreen hpanel
+    JQuery('.fullscreen').on('click', function () {
+      var hpanel = JQuery(this).closest('div.hpanel');
+      var icon = JQuery(this).find('i:first');
+      JQuery('body').toggleClass('fullscreen-panel-mode');
+      icon.toggleClass('fa-expand').toggleClass('fa-compress');
+      hpanel.toggleClass('fullscreen');
+      setTimeout(function () {
+        JQuery(window).trigger('resize');
+      }, 100);
+    });
 
-        // Function for small header
-        JQuery('.small-header-action').on('click', function (event) {
-            event.preventDefault();
-            var icon = JQuery(this).find('i:first');
-            var breadcrumb = JQuery(this).parent().find('#hbreadcrumb');
-            JQuery(this).parent().parent().parent().toggleClass('small-header');
-            breadcrumb.toggleClass('m-t-lg');
-            icon.toggleClass('fa-arrow-up').toggleClass('fa-arrow-down');
-        });
+    // Open close right sidebar
+    JQuery('.right-sidebar-toggle').on('click', function () {
+      JQuery('#right-sidebar').toggleClass('sidebar-open');
+    });
 
-        JQuery('.tooltip-demo').tooltip({
-            selector: "[data-toggle=tooltip]"
-        });
+    // Function for small header
+    JQuery('.small-header-action').on('click', function (event) {
+      event.preventDefault();
+      var icon = JQuery(this).find('i:first');
+      var breadcrumb = JQuery(this).parent().find('#hbreadcrumb');
+      JQuery(this).parent().parent().parent().toggleClass('small-header');
+      breadcrumb.toggleClass('m-t-lg');
+      icon.toggleClass('fa-arrow-up').toggleClass('fa-arrow-down');
+    });
 
-        // Initialize popover
-        JQuery("[data-toggle=popover]").popover();
+    JQuery('.tooltip-demo').tooltip({
+      selector: "[data-toggle=tooltip]"
+    });
 
-        // Move modal to body
-        // Fix Bootstrap backdrop issu with animation.css
-        JQuery('.modal').appendTo("body");
+    // Initialize popover
+    JQuery("[data-toggle=popover]").popover();
 
-        JQuery(window).bind("load", function () {
-            // Remove splash screen after load
-            JQuery('.splash').css('display', 'none');
-        });
+    // Move modal to body
+    // Fix Bootstrap backdrop issu with animation.css
+    JQuery('.modal').appendTo("body");
 
-        setTimeout(function () {
-            App.fixWrapperHeight();
-        }, 300);
+    JQuery(window).bind("load", function () {
+      // Remove splash screen after load
+      JQuery('.splash').css('display', 'none');
+    });
 
-        JQuery(window).bind("resize click", function () {
-            // Add special class to minimalize page elements when screen is less than 768px
-            App.setBodySmall();
-            // Wait until metsiMenu, collapse and other effect finish and set wrapper height
-            setTimeout(function () {
-                App.fixWrapperHeight();
-            }, 300);
-        });
-    }
+    setTimeout(function () {
+      App.fixWrapperHeight();
+    }, 300);
+
+    JQuery(window).bind("resize click", function () {
+      // Add special class to minimalize page elements when screen is less than 768px
+      App.setBodySmall();
+      // Wait until metsiMenu, collapse and other effect finish and set wrapper height
+      setTimeout(function () {
+        App.fixWrapperHeight();
+      }, 300);
+    });
+  }
 }
