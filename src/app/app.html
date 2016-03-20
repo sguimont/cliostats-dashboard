@@ -2,32 +2,27 @@
 <div id="header">
   <div class="color-line">
   </div>
-  <div id="logo" class="light-version">
-        <span>
-            APP NAME
-        </span>
+
+  <div id="logo" class="dark-version">
+    <span>Cliostats</span>
   </div>
+
   <nav role="navigation">
     <div class="header-link hide-menu"><i class="fa fa-bars"></i></div>
     <div class="small-logo">
-      <span class="text-primary">APP NAME</span>
+      <span class="text-primary">Cliostats</span>
     </div>
-    <form role="search" class="navbar-form-custom" method="post" action="#">
-      <div class="form-group">
-        <input type="text" placeholder="Search something special" class="form-control" name="search">
-      </div>
-    </form>
     <div class="mobile-menu">
       <button type="button" class="navbar-toggle mobile-menu-toggle" data-toggle="collapse" data-target="#mobile-collapse">
         <i class="fa fa-chevron-down"></i>
       </button>
       <div class="collapse mobile-navbar" id="mobile-collapse">
         <ul class="nav navbar-nav">
-          <li>
-            <a class="" href="#">Link</a>
+          <li [class.active]="isRouteActive(['Home'])">
+            <a [routerLink]="['Home']"><span class="nav-label">Home</span></a>
           </li>
-          <li>
-            <a class="" href="#">Link</a>
+          <li [class.active]="isRouteActive(['About'])">
+            <a [routerLink]="['About']"><span class="nav-label">About</span></a>
           </li>
         </ul>
       </div>
@@ -36,7 +31,7 @@
       <ul class="nav navbar-nav no-borders">
         <li>
           <a href="#">
-            <i class="pe-7s-upload pe-rotate-90"></i>
+            <i class="pe-7s-upload pe-rotate-90 "></i>
           </a>
         </li>
       </ul>
@@ -46,6 +41,7 @@
 
 <!-- Navigation -->
 <aside id="menu">
+
   <div id="navigation">
     <div class="profile-picture">
 
@@ -57,21 +53,20 @@
             <small class="text-muted">Links <b class="caret"></b></small>
           </a>
           <ul class="dropdown-menu animated flipInX m-t-xs">
-            <li><a href="#">Example link</a></li>
-            <li><a href="#">Example link</a></li>
+            <li><a href="#">Profile</a></li>
+            <li><a href="#">Account</a></li>
           </ul>
         </div>
-
 
       </div>
     </div>
 
     <ul class="nav" id="side-menu">
-      <li class="active">
-        <a href="index.html"> <span class="nav-label">Page 1</span> <span class="label label-success pull-right">start</span> </a>
+      <li [class.active]="isRouteActive(['Home'])">
+        <a [routerLink]="['Home']"><span class="nav-label">Home</span></a>
       </li>
-      <li>
-        <a href="page2.html"> <span class="nav-label">Page 2</span> </a>
+      <li [class.active]="isRouteActive(['About'])">
+        <a [routerLink]="['About']"><span class="nav-label">About</span></a>
       </li>
 
     </ul>
@@ -81,31 +76,14 @@
 <!-- Main Wrapper -->
 <div id="wrapper">
 
-  <div class="content animate-panel">
-    <div class="row">
-      <div class="col-lg-12">
-        <div class="hpanel">
-          <div class="panel-heading">
-            <div class="panel-tools">
-              <a class="showhide"><i class="fa fa-chevron-up"></i></a>
-              <a class="closebox"><i class="fa fa-times"></i></a>
-            </div>
-            Title
-          </div>
-          <div class="panel-body">
-            Page 1
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
+  <router-outlet></router-outlet>
 
   <!-- Footer-->
   <footer class="footer">
         <span class="pull-right">
-            Example text
+            Version 1.0
         </span>
-    Company 2016
+    Cliostats © 2016
   </footer>
 
 </div>

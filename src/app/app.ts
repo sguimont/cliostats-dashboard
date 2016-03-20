@@ -1,5 +1,5 @@
 import {Component} from "angular2/core";
-import {RouteConfig, ROUTER_DIRECTIVES} from "angular2/router";
+import {RouteConfig, ROUTER_DIRECTIVES, Router} from "angular2/router";
 import {FORM_PROVIDERS} from "angular2/common";
 import {Api} from "./services/api/api";
 import {Home} from "./components/home/home";
@@ -21,12 +21,13 @@ var JQuery = require('jquery');
     {path: '/About', component: About, name: 'About'}
 ])
 export class App {
+
     url:string = 'https://github.com/sguimont/node-cliostats';
 
-    constructor(public api:Api) {
+    constructor(private router:Router, public api:Api) {
     }
 
-    fixWrapperHeight() {
+    static fixWrapperHeight() {
         var headerH = 62;
         var navigationH = JQuery("#navigation").height();
         var contentH = JQuery(".content").height();
@@ -47,13 +48,17 @@ export class App {
         }
     }
 
-    setBodySmall() {
+    static setBodySmall() {
         if (JQuery(window).width() < 769) {
             JQuery('body').addClass('page-small');
         } else {
             JQuery('body').removeClass('page-small');
             JQuery('body').removeClass('show-sidebar');
         }
+    }
+
+    public isRouteActive(route) {
+        return this.router.isRouteActive(this.router.generate(route));
     }
 
     ngOnInit() {
@@ -111,7 +116,7 @@ export class App {
 
         };
 
-        this.setBodySmall();
+        App.setBodySmall();
 
         JQuery('.hide-menu').on('click', function (event) {
             event.preventDefault();
@@ -200,21 +205,17 @@ export class App {
             JQuery('.splash').css('display', 'none');
         });
 
-        var _this = this;
         setTimeout(function () {
-            _this.fixWrapperHeight();
+            App.fixWrapperHeight();
         }, 300);
 
         JQuery(window).bind("resize click", function () {
-
             // Add special class to minimalize page elements when screen is less than 768px
-            _this.setBodySmall();
-
-            // Waint until metsiMenu, collapse and other effect finish and set wrapper height
+            App.setBodySmall();
+            // Wait until metsiMenu, collapse and other effect finish and set wrapper height
             setTimeout(function () {
-                _this.fixWrapperHeight();
+                App.fixWrapperHeight();
             }, 300);
         });
-
     }
 }
