@@ -1,6 +1,7 @@
 import {Component, OnInit} from "angular2/core";
 
 var Chart = require('chart.js/Chart');
+var JQuery = require('jquery');
 
 @Component({
   selector: 'charts',
@@ -52,8 +53,12 @@ export class Charts implements OnInit {
 
     var element:any = document.getElementById("sharpLineOptions");
     var ctx = element.getContext("2d");
-    new Chart(ctx).Line(sharpLineData, sharpLineOptions);
+    var newChart = new Chart(ctx).Line(sharpLineData, sharpLineOptions);
 
+    JQuery(window).bind("resize", function () {
+      setTimeout(function () {
+        newChart.resize(newChart.render, true);
+      }, 50);
+    });
   }
-
 }
