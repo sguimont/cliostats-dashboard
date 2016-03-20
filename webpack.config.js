@@ -17,7 +17,7 @@ var ENV = process.env.npm_lifecycle_event;
 var isTest = ENV === 'test' || ENV === 'test-watch';
 var isProd = ENV === 'build';
 
-module.exports = function makeWebpackConfig() {
+module.exports = function makeWebpackConfig () {
   /**
    * Config
    * Reference: http://webpack.github.io/docs/configuration.html
@@ -35,7 +35,7 @@ module.exports = function makeWebpackConfig() {
   } else if (isProd) {
     config.devtool = 'source-map';
   } else {
-    config.devtool = 'eval-source-map';
+    config.devtool = 'inline-source-map';
   }
 
   // add debug messages
@@ -69,10 +69,11 @@ module.exports = function makeWebpackConfig() {
     cache: !isTest,
     root: root(),
     // only discover files that have those extensions
-    extensions: ['', '.ts', '.js', '.json', '.css', '.scss', '.html'],
+    extensions: [ '', '.ts', '.js', '.json', '.css', '.scss', '.html' ],
     alias: {
       'app': 'src/app',
-      'common': 'src/common'
+      'common': 'src/common',
+      'jquery': 'jquery/dist/jquery.min.js'
     }
   };
 
@@ -83,7 +84,7 @@ module.exports = function makeWebpackConfig() {
    * This handles most of the magic responsible for converting modules
    */
   config.module = {
-    preLoaders: isTest ? [] : [{test: /\.ts$/, loader: 'tslint'}],
+    preLoaders: isTest ? [] : [ { test: /\.ts$/, loader: 'tslint' } ],
     loaders: [
       // Support for .ts files.
       {
@@ -98,14 +99,16 @@ module.exports = function makeWebpackConfig() {
             2502  // 2502 -> Referenced directly or indirectly
           ]
         },
-        exclude: [isTest ? /\.(e2e)\.ts$/ : /\.(spec|e2e)\.ts$/, /node_modules\/(?!(ng2-.+))/]
+        exclude: [ isTest ? /\.(e2e)\.ts$/ : /\.(spec|e2e)\.ts$/, /node_modules\/(?!(ng2-.+))/ ]
       },
 
       // copy those assets to output
-      {test: /\.(png|jpe?g|gif|svg|woff|woff2|ttf|eot|ico)$/, loader: 'file?name=[path][name].[ext]?[hash]'},
+      {test: /\.(ttf|eot|svg|woff(2)?).*$/, loader: "file-loader"},
+
+      { test: /\.(png|jpe?g|gif|ico)$/, loader: 'file?name=[path][name].[ext]?[hash]' },
 
       // Support for *.json files.
-      {test: /\.json$/, loader: 'json'},
+      { test: /\.json$/, loader: 'json' },
 
       // Support for CSS as raw text
       // use 'null' loader in test mode (https://github.com/webpack/null-loader)
@@ -113,10 +116,10 @@ module.exports = function makeWebpackConfig() {
       {
         test: /\.css$/,
         exclude: root('src', 'app'),
-        loader: isTest ? 'null' : ExtractTextPlugin.extract('style', 'css?sourceMap!postcss')
+        loader: isTest ? 'null' : ExtractTextPlugin.extract('style', 'css')
       },
       // all css required in src/app files will be merged in js files
-      {test: /\.css$/, include: root('src', 'app'), loader: 'raw!postcss'},
+      { test: /\.css$/, include: root('src', 'app'), loader: 'raw' },
 
       // support for .scss files
       // use 'null' loader in test mode (https://github.com/webpack/null-loader)
@@ -124,17 +127,17 @@ module.exports = function makeWebpackConfig() {
       {
         test: /\.scss$/,
         exclude: root('src', 'app'),
-        loader: isTest ? 'null' : ExtractTextPlugin.extract('style', 'css?sourceMap!postcss!sass')
+        loader: isTest ? 'null' : ExtractTextPlugin.extract('style', 'raw!postcss!sass')
       },
       // all css required in src/app files will be merged in js files
-      {test: /\.scss$/, exclude: root('src', 'style'), loader: 'raw!postcss!sass'},
+      { test: /\.scss$/, exclude: root('src', 'style'), loader: 'raw!postcss!sass' },
 
       // support for .html as raw text
       // todo: change the loader to something that adds a hash to images
-      {test: /\.html$/, loader: 'raw'}
+      { test: /\.html$/, loader: 'raw' }
     ],
     postLoaders: [],
-    noParse: [/.+zone\.js\/dist\/.+/, /.+angular2\/bundles\/.+/, /angular2-polyfills\.js/]
+    noParse: [ /.+zone\.js\/dist\/.+/, /.+angular2\/bundles\/.+/, /angular2-polyfills\.js/ ]
   };
 
   if (isTest) {
@@ -143,7 +146,7 @@ module.exports = function makeWebpackConfig() {
       test: /\.(js|ts)$/,
       include: path.resolve('src'),
       loader: 'istanbul-instrumenter-loader',
-      exclude: [/\.spec\.ts$/, /\.e2e\.ts$/, /node_modules/]
+      exclude: [ /\.spec\.ts$/, /\.e2e\.ts$/, /node_modules/ ]
     })
   }
 
@@ -163,7 +166,6 @@ module.exports = function makeWebpackConfig() {
     })
   ];
 
-
   if (!isTest) {
     config.plugins.push(
       // Generate common chunks if necessary
@@ -178,7 +180,7 @@ module.exports = function makeWebpackConfig() {
         name: 'common',
         filename: isProd ? 'js/[name].[hash].js' : 'js/[name].js',
         minChunks: 2,
-        chunks: ['app', 'vendor']
+        chunks: [ 'app', 'vendor' ]
       }),
 
       // Inject script and link tags into html files
@@ -186,17 +188,17 @@ module.exports = function makeWebpackConfig() {
       new HtmlWebpackPlugin({
         template: './src/public/index.html',
         inject: 'body',
-        chunksSortMode: function compare(a, b) {
+        chunksSortMode: function compare (a, b) {
           // common always first
-          if (a.names[0] === 'common') {
+          if (a.names[ 0 ] === 'common') {
             return -1;
           }
           // app always last
-          if (a.names[0] === 'app') {
+          if (a.names[ 0 ] === 'app') {
             return 1;
           }
           // vendor before app
-          if (a.names[0] === 'vendor' && b.names[0] === 'app') {
+          if (a.names[ 0 ] === 'vendor' && b.names[ 0 ] === 'app') {
             return -1;
           } else {
             return 1;
@@ -209,7 +211,7 @@ module.exports = function makeWebpackConfig() {
       // Extract css files
       // Reference: https://github.com/webpack/extract-text-webpack-plugin
       // Disabled when in test mode or not in build mode
-      new ExtractTextPlugin('css/[name].[hash].css', {disable: !isProd})
+      new ExtractTextPlugin('css/[name].[hash].css')
     );
   }
 
@@ -234,9 +236,9 @@ module.exports = function makeWebpackConfig() {
 
       // Copy assets from the public folder
       // Reference: https://github.com/kevlened/copy-webpack-plugin
-      new CopyWebpackPlugin([{
+      new CopyWebpackPlugin([ {
         from: root('src/public')
-      }])
+      } ])
     );
   }
 
@@ -247,7 +249,7 @@ module.exports = function makeWebpackConfig() {
    */
   config.postcss = [
     autoprefixer({
-      browsers: ['last 2 version']
+      browsers: [ 'last 2 version' ]
     })
   ];
 
@@ -284,12 +286,12 @@ module.exports = function makeWebpackConfig() {
 }();
 
 // Helper functions
-function root(args) {
+function root (args) {
   args = Array.prototype.slice.call(arguments, 0);
-  return path.join.apply(path, [__dirname].concat(args));
+  return path.join.apply(path, [ __dirname ].concat(args));
 }
 
-function rootNode(args) {
+function rootNode (args) {
   args = Array.prototype.slice.call(arguments, 0);
-  return root.apply(path, ['node_modules'].concat(args));
+  return root.apply(path, [ 'node_modules' ].concat(args));
 }
