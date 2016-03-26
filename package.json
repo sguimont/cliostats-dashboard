@@ -1,6 +1,6 @@
 {
   "name": "cliostats-dashboard",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "author": "Sebastien Guimont <info@sebastienguimont.com>",
   "license": "ISC",
   "homepage": "https://github.com/sguimont/cliostats-dashboard#readme",
@@ -10,6 +10,10 @@
   "repository": {
     "type": "git",
     "url": "git+https://github.com/sguimont/cliostats-dashboard.git"
+  },
+  "engines": {
+    "node": "4.x.x",
+    "npm": "2.14.x"
   },
   "scripts": {
     "clean": "rimraf node_modules doc dist && npm cache clean",
